@@ -3,6 +3,8 @@
 #include <iostream>
 #include "GPIO.h"
 
+using namespace std;
+
 GPIO::GPIO(string num) {
 	gpio_num = num;
 	export_gpio();
