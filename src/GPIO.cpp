@@ -6,12 +6,12 @@
 using namespace std;
 
 GPIO::GPIO(string num) {
-	gpio_num = num;
-	export_gpio();
+  gpio_num = num;
+  export_gpio();
 }
 
 GPIO::~GPIO() {
-	unexport_gpio();
+  unexport_gpio();
 }
 
 int GPIO::set_in() {
@@ -51,13 +51,13 @@ int GPIO::set_val(string value) {
 }
 
 int GPIO::write_value_to_file(string file_name, string value) {
-	ofstream file_stream(file_name.c_str());
+  ofstream file_stream(file_name.c_str());
 
-	if (file_stream < 0) {
-		return -1;
-	}
+  if (file_stream < 0) {
+    return -1;
+  }
 
-	file_stream << value;
-	file_stream.close();
-	return 0;
+  file_stream << value;
+  file_stream.close();
+  return 0;
 }
