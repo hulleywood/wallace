@@ -7,11 +7,11 @@ using namespace std;
 int main (void) {
 
 	GPIO* gpio18 = new GPIO("18");
-	gpio18->set_dir("out");
+	gpio18->set_out();
 
-	gpio18->set_val("1");
+	gpio18->on();
 	usleep(1000000);
-	gpio18->set_val("0");
+	gpio18->off();
 	
 	cout << "Exiting....." << endl;
 	delete gpio18;

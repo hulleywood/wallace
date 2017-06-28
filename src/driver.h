@@ -8,16 +8,34 @@ using namespace std;
 
 class Driver {
   public:
-    Driver(string gpio_in_1_num, string gpio_in_2_num, string gpio_in_3_num, string gpio_in_4_num, string gpio_pwm_1_num, string gpio_pwm_2_num);
+    Driver(string left_motor_1_gpio, string left_motor_2_gpio, string right_motor_1_gpio, string right_motor_2_gpio, string left_pwm_gpio, string right_pwm_gpio);
     ~Driver();
 
+    void set_speed();
+    void steer_left();
+    void steer_right();
+    void stop();
+
   private:
-    GPIO* gpio_in_1;
-    GPIO* gpio_in_2;
-    GPIO* gpio_in_3;
-    GPIO* gpio_in_4;
-    GPIO* gpio_pwm_1;
-    GPIO* gpio_pwm_2;
+    GPIO* left_motor_1;
+    GPIO* left_motor_2;
+    GPIO* right_motor_1;
+    GPIO* right_motor_2;
+    GPIO* left_pwm;
+    GPIO* right_pwm;
+
+    // limits
+    int max_speed;
+    int min_speed;
+    int max_acceleration;
+
+    // current state
+    int acceleration;
+    int left_speed;
+    int right_speed;
+
+    void set_direction_forward();
+    void set_direction_backward();
 };
 
 #endif

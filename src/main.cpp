@@ -6,14 +6,14 @@ using namespace std;
 
 int main() {
 
-  const string gpio_in_1_num = "27";
-  const string gpio_in_2_num = "22";
-  const string gpio_in_3_num = "24";
-  const string gpio_in_4_num = "25";
-  const string gpio_pwm_1_num = "17";
-  const string gpio_pwm_2_num = "4";
+  const string left_motor_1_gpio = "24";
+  const string left_motor_2_gpio = "25";
+  const string right_motor_1_gpio = "27";
+  const string right_motor_2_gpio = "22";
+  const string left_pwm_gpio = "17";
+  const string right_pwm_gpio = "4";
 
-  Driver driver(gpio_in_1_num, gpio_in_2_num, gpio_in_3_num, gpio_in_4_num, gpio_pwm_1_num, gpio_pwm_2_num);
+  Driver driver(left_motor_1_gpio, left_motor_2_gpio, right_motor_1_gpio, right_motor_2_gpio, left_pwm_gpio, right_pwm_gpio);
 
   return 0;
 
