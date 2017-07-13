@@ -6,22 +6,31 @@
 
 using namespace std;
 
-Driver::Driver(int left_motor_1_gpio_, int left_motor_2_gpio_, int right_motor_1_gpio_, int right_motor_2_gpio_, int left_pwm_gpio_, int right_pwm_gpio_) {
+Driver::Driver(int ENA_GPIO_, int ENB_GPIO_, int IN1_GPIO_, int IN2_GPIO_, int IN3_GPIO_, int IN4_GPIO_) {
 
-  left_motor_1_gpio = left_motor_1_gpio_;
-  left_motor_2_gpio = left_motor_2_gpio_;
-  right_motor_1_gpio = right_motor_1_gpio_;
-  right_motor_2_gpio = right_motor_2_gpio_;
-  left_pwm_gpio = left_pwm_gpio_;
-  right_pwm_gpio = right_pwm_gpio_;
+  // right wheel speed
+  ENA_GPIO = ENA_GPIO_;
 
-  softPwmCreate(left_pwm_gpio, LOW, max_speed);
-  softPwmCreate(right_pwm_gpio, LOW, max_speed);
+  // left wheel speed
+  ENB_GPIO = ENB_GPIO_;
 
-  pinMode(left_motor_1_gpio, OUTPUT);
-  pinMode(left_motor_2_gpio, OUTPUT);
-  pinMode(right_motor_1_gpio, OUTPUT);
-  pinMode(right_motor_2_gpio, OUTPUT);
+  // right wheel direction
+  IN1_GPIO = IN1_GPIO_;
+  IN2_GPIO = IN2_GPIO_;
+
+  // left wheel direction
+  IN3_GPIO = IN3_GPIO_;
+  IN4_GPIO = IN4_GPIO_;
+
+  // set max range for PWM pins
+  softPwmCreate(ENA_GPIO, LOW, MAX_SPEED);
+  softPwmCreate(ENB_GPIO, LOW, MAX_SPEED);
+
+  // set all motor pins to output mode
+  pinMode(IN1_GPIO, OUTPUT);
+  pinMode(IN2_GPIO, OUTPUT);
+  pinMode(IN3_GPIO, OUTPUT);
+  pinMode(IN4_GPIO, OUTPUT);
   
   // ensure car isn't moving on construction
   stop(); 
@@ -30,60 +39,86 @@ Driver::Driver(int left_motor_1_gpio_, int left_motor_2_gpio_, int right_motor_1
 Driver::~Driver() {
   // ensure car stops on destruction
   stop();
+
+  // TODO does wiringPi deal with unexporting GPIOs?
+}
+
+void Driver::update_motor_speeds() {
+  softPwmWrite(ENA_GPIO, right_speed);
+  softPwmWrite(ENB_GPIO, left_speed);
+  log_status();
 }
 
 void Driver::accelerate() {
-  left_speed += max_acceleration;
-  right_speed += max_acceleration;
-
-  if (left_speed > max_speed) {
-    left_speed = max_speed;
+  left_speed += MAX_ACCELERATION;
+  right_speed += MAX_ACCELERATION;
+  
+  // reset left_speed to MAX_SPEED if it exceeds the value
+  if (left_speed > MAX_SPEED) {
+    left_speed = MAX_SPEED;
   }
 
-  if (right_speed > max_speed) {
-    right_speed = max_speed;
+  // reset right_speed to MAX_SPEED if it exceeds the value
+  if (right_speed > MAX_SPEED) {
+    right_speed = MAX_SPEED;
   }
 
-  softPwmWrite(left_pwm_gpio, left_speed);
-  softPwmWrite(right_pwm_gpio, right_speed);
-  log_status();
+  update_motor_speeds();
 }
 
 void Driver::decelerate() {
-  left_speed -= max_acceleration;
-  right_speed -= max_acceleration;
+  left_speed -= MAX_ACCELERATION;
+  right_speed -= MAX_ACCELERATION;
 
-  if (left_speed < min_speed) {
-    left_speed = min_speed;
+  // reset left_speed to MAX_SPEED if it exceeds the value
+  if (left_speed < MIN_SPEED) {
+    left_speed = MIN_SPEED;
   }
 
-  if (right_speed < min_speed) {
-    right_speed = min_speed;
+  // reset right_speed to MAX_SPEED if it exceeds the value
+  if (right_speed < MIN_SPEED) {
+    right_speed = MIN_SPEED;
   }
 
-  softPwmWrite(left_pwm_gpio, left_speed);
-  softPwmWrite(right_pwm_gpio, right_speed);
-  log_status();
+  update_motor_speeds();
 }
 
 void Driver::steer_left() {
-  // check if left can increase or right should decrease
-  // update left_speed and right_speed prior to pwm update
+  // increase right speed to go left
+  right_speed += MAX_ACCELERATION
+
+  // if right speed is too fast, decrease left speed by amount over to keep relative difference
+  if (right_speed > MAX_SPEED) {
+    int overage = right_speed - MAX_SPEED;
+    left_speed -= overage;
+    right_speed = MAX_SPEED;
+  }
+
+  update_motor_speeds();
 }
 
 void Driver::steer_right() {
-  // check if left can increase or right should decrease
-  // update left_speed and right_speed prior to pwm update
+  // increase left speed to go right
+  left_speed += MAX_ACCELERATION
+
+  // if left speed is too fast, decrease right speed by amount over to keep relative difference
+  if (left_speed > MAX_SPEED) {
+    int overage = left_speed - MAX_SPEED;
+    right_speed -= overage;
+    left_speed = MAX_SPEED;
+  }
+
+  update_motor_speeds();
 }
 
 void Driver::stop() {
   // set all motors to off
-  digitalWrite(left_motor_1_gpio, LOW);
-  digitalWrite(left_motor_2_gpio, LOW);
-  digitalWrite(right_motor_1_gpio, LOW);
-  digitalWrite(right_motor_2_gpio, LOW);
+  digitalWrite(IN1_GPIO, LOW);
+  digitalWrite(IN2_GPIO, LOW);
+  digitalWrite(IN3_GPIO, LOW);
+  digitalWrite(IN4_GPIO, LOW);
 
-  // update speed and acceleration to 0
+  // update speeds and acceleration to 0
   acceleration = 0;
   left_speed = 0;
   right_speed = 0;
@@ -91,19 +126,29 @@ void Driver::stop() {
 }
 
 void Driver::set_direction_forward() {
-  digitalWrite(left_motor_1_gpio, LOW);
-  digitalWrite(left_motor_2_gpio, HIGH);
-  digitalWrite(right_motor_1_gpio, HIGH);
-  digitalWrite(right_motor_2_gpio, LOW);
+  // right wheel forward
+  digitalWrite(IN1_GPIO, HIGH);
+  digitalWrite(IN2_GPIO, LOW);
+
+  // left wheel forward
+  digitalWrite(IN3_GPIO, LOW);
+  digitalWrite(IN4_GPIO, HIGH);
+
+  // set direction variable for logging purposes
   direction = "forward";
   log_status();
 }
 
 void Driver::set_direction_backward() {
-  digitalWrite(left_motor_1_gpio, HIGH);
-  digitalWrite(left_motor_2_gpio, LOW);
-  digitalWrite(right_motor_1_gpio, LOW);
-  digitalWrite(right_motor_2_gpio, HIGH);
+  // right wheel backward
+  digitalWrite(IN1_GPIO, LOW);
+  digitalWrite(IN2_GPIO, HIGH);
+
+  // left wheel backward
+  digitalWrite(IN3_GPIO, HIGH);
+  digitalWrite(IN4_GPIO, LOW);
+
+  // set direction variable for logging purposes
   direction = "backward";
   log_status();
 }

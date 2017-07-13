@@ -9,7 +9,7 @@ using namespace std;
 
 class Driver {
   public:
-    Driver(int left_motor_1_gpio_, int left_motor_2_gpio_, int right_motor_1_gpio_, int right_motor_2_gpio_, int left_pwm_gpio_, int right_pwm_gpio_);
+    Driver(int ENA_GPIO_, int ENB_GPIO_, int IN1_GPIO_, int IN2_GPIO_, int IN3_GPIO_, int IN4_GPIO_);
     ~Driver();
 
     void accelerate();
@@ -18,18 +18,24 @@ class Driver {
     void steer_right();
     void stop();
 
+    void set_direction_forward();
+    void set_direction_backward();
+    void log_status();
+
+  private
+  
     // limits
-    static const int max_speed = 100;
-    static const int min_speed = 0;
-    static const int max_acceleration = 5;
+    static const int MAX_SPEED = 100;
+    static const int MIN_SPEED = 0;
+    static const int MAX_ACCELERATION = 5;
 
     // gpio mappings
-    int left_motor_1_gpio;
-    int left_motor_2_gpio;
-    int right_motor_1_gpio;
-    int right_motor_2_gpio;
-    int left_pwm_gpio;
-    int right_pwm_gpio;
+    int ENA_GPIO;
+    int ENB_GPIO;
+    int IN1_GPIO;
+    int IN2_GPIO;
+    int IN3_GPIO;
+    int IN4_GPIO;
 
     // current state
     int acceleration;
@@ -37,9 +43,8 @@ class Driver {
     int right_speed;
     string direction;
 
-    void set_direction_forward();
-    void set_direction_backward();
-    void log_status();
+    void update_motor_speeds();
+
 };
 
 #endif
