@@ -46,6 +46,7 @@ void Driver::accelerate() {
 
   softPwmWrite(left_pwm_gpio, left_speed);
   softPwmWrite(right_pwm_gpio, right_speed);
+  log_status();
 }
 
 void Driver::decelerate() {
@@ -62,6 +63,7 @@ void Driver::decelerate() {
 
   softPwmWrite(left_pwm_gpio, left_speed);
   softPwmWrite(right_pwm_gpio, right_speed);
+  log_status();
 }
 
 void Driver::steer_left() {
@@ -85,6 +87,7 @@ void Driver::stop() {
   acceleration = 0;
   left_speed = 0;
   right_speed = 0;
+  log_status();
 }
 
 void Driver::set_direction_forward() {
@@ -93,6 +96,7 @@ void Driver::set_direction_forward() {
   digitalWrite(right_motor_1_gpio, HIGH);
   digitalWrite(right_motor_2_gpio, LOW);
   direction = "forward";
+  log_status();
 }
 
 void Driver::set_direction_backward() {
@@ -101,6 +105,7 @@ void Driver::set_direction_backward() {
   digitalWrite(right_motor_1_gpio, LOW);
   digitalWrite(right_motor_2_gpio, HIGH);
   direction = "backward";
+  log_status();
 }
 
 void Driver::log_status() {

@@ -1,7 +1,7 @@
 #include <iostream>
 #include <wiringPi.h>
 #include <softPwm.h>
-#include "driver.h"
+#include "../driver.h"
 
 using namespace std;
 
