@@ -11,12 +11,14 @@ int main() {
     return 1;
 
   const int statusPin = 29;
-  const int left_motor_1_gpio = 17;
-  const int left_motor_2_gpio = 27;
-  const int right_motor_1_gpio = 3;
-  const int right_motor_2_gpio = 4;
-  const int left_pwm_gpio = 22;
-  const int right_pwm_gpio = 2;
+
+  const int ENA_GPIO = 2;
+  const int IN1_GPIO = 3;
+  const int IN2_GPIO = 4;
+
+  const int ENB_GPIO = 22;
+  const int IN3_GPIO = 17;
+  const int IN4_GPIO = 27;
 
   Driver driver(left_motor_1_gpio, left_motor_2_gpio, right_motor_1_gpio, right_motor_2_gpio, left_pwm_gpio, right_pwm_gpio);
   
