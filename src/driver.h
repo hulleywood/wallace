@@ -2,40 +2,44 @@
 #define DRIVER_H
 
 #include <string>
-#include "GPIO.h"
+#include <wiringPi.h>
+#include <softPwm.h>
 
 using namespace std;
 
 class Driver {
   public:
-    Driver(string left_motor_1_gpio, string left_motor_2_gpio, string right_motor_1_gpio, string right_motor_2_gpio, string left_pwm_gpio, string right_pwm_gpio);
+    Driver(int left_motor_1_gpio_, int left_motor_2_gpio_, int right_motor_1_gpio_, int right_motor_2_gpio_, int left_pwm_gpio_, int right_pwm_gpio_);
     ~Driver();
 
-    void set_speed();
+    void accelerate();
+    void decelerate();
     void steer_left();
     void steer_right();
     void stop();
 
-  private:
-    GPIO* left_motor_1;
-    GPIO* left_motor_2;
-    GPIO* right_motor_1;
-    GPIO* right_motor_2;
-    GPIO* left_pwm;
-    GPIO* right_pwm;
-
     // limits
-    int max_speed;
-    int min_speed;
-    int max_acceleration;
+    static const int max_speed = 100;
+    static const int min_speed = 0;
+    static const int max_acceleration = 5;
+
+    // gpio mappings
+    int left_motor_1_gpio;
+    int left_motor_2_gpio;
+    int right_motor_1_gpio;
+    int right_motor_2_gpio;
+    int left_pwm_gpio;
+    int right_pwm_gpio;
 
     // current state
     int acceleration;
     int left_speed;
     int right_speed;
+    string direction;
 
     void set_direction_forward();
     void set_direction_backward();
+    void log_status();
 };
 
 #endif

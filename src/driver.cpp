@@ -1,56 +1,67 @@
 #include <string>
 #include <iostream>
+#include <wiringPi.h>
+#include <softPwm.h>
 #include "driver.h"
-#include "GPIO.h"
 
 using namespace std;
 
-Driver::Driver(string left_motor_1_gpio, string left_motor_2_gpio, string right_motor_1_gpio, string right_motor_2_gpio, string left_pwm_gpio, string right_pwm_gpio) {
+Driver::Driver(int left_motor_1_gpio_, int left_motor_2_gpio_, int right_motor_1_gpio_, int right_motor_2_gpio_, int left_pwm_gpio_, int right_pwm_gpio_) {
 
-  int max_speed = 50; // need to play with this
-  int min_speed = 0;
-  int max_acceleration = 5; // need to play with this
+  left_motor_1_gpio = left_motor_1_gpio_;
+  left_motor_2_gpio = left_motor_2_gpio_;
+  right_motor_1_gpio = right_motor_1_gpio_;
+  right_motor_2_gpio = right_motor_2_gpio_;
+  left_pwm_gpio = left_pwm_gpio_;
+  right_pwm_gpio = right_pwm_gpio_;
 
-  GPIO* left_motor_1 = new GPIO(left_motor_1_gpio);
-  GPIO* left_motor_2 = new GPIO(left_motor_2_gpio);
-  GPIO* right_motor_1 = new GPIO(right_motor_1_gpio);
-  GPIO* right_motor_2 = new GPIO(right_motor_2_gpio);
-  GPIO* left_pwm = new GPIO(left_pwm_gpio);
-  GPIO* right_pwm = new GPIO(right_pwm_gpio);
+  softPwmCreate(left_pwm_gpio, LOW, max_speed);
+  softPwmCreate(right_pwm_gpio, LOW, max_speed);
 
-  left_motor_1->set_out();
-  left_motor_2->set_out();
-  right_motor_1->set_out();
-  right_motor_2->set_out();
-  left_pwm->set_out();
-  right_pwm->set_out();
-
-  stop(); // ensure car isn't moving on construction
-
+  pinMode(left_motor_1_gpio, OUTPUT);
+  pinMode(left_motor_2_gpio, OUTPUT);
+  pinMode(right_motor_1_gpio, OUTPUT);
+  pinMode(right_motor_2_gpio, OUTPUT);
+  
+  // ensure car isn't moving on construction
+  stop(); 
 }
 
 Driver::~Driver() {
-
-  stop(); // ensure car stops on destruction
-
-  delete left_motor_1;
-  delete left_motor_2;
-  delete right_motor_1;
-  delete right_motor_2;
-  delete left_pwm;
-  delete right_pwm;
-
-  left_motor_1 = NULL;
-  left_motor_2 = NULL;
-  right_motor_1 = NULL;
-  right_motor_2 = NULL;
-  left_pwm = NULL;
-  right_pwm = NULL;
-
+  // ensure car stops on destruction
+  stop();
 }
 
-void Driver::set_speed() {
-  // use pwms to set speed based on left/right attrs
+void Driver::accelerate() {
+  left_speed += max_acceleration;
+  right_speed += max_acceleration;
+
+  if (left_speed > max_speed) {
+    left_speed = max_speed;
+  }
+
+  if (right_speed > max_speed) {
+    right_speed = max_speed;
+  }
+
+  softPwmWrite(left_pwm_gpio, left_speed);
+  softPwmWrite(right_pwm_gpio, right_speed);
+}
+
+void Driver::decelerate() {
+  left_speed -= max_acceleration;
+  right_speed -= max_acceleration;
+
+  if (left_speed < min_speed) {
+    left_speed = min_speed;
+  }
+
+  if (right_speed < min_speed) {
+    right_speed = min_speed;
+  }
+
+  softPwmWrite(left_pwm_gpio, left_speed);
+  softPwmWrite(right_pwm_gpio, right_speed);
 }
 
 void Driver::steer_left() {
@@ -65,10 +76,10 @@ void Driver::steer_right() {
 
 void Driver::stop() {
   // set all motors to off
-  left_motor_1->off();
-  left_motor_2->off();
-  right_motor_1->off();
-  right_motor_2->off();
+  digitalWrite(left_motor_1_gpio, LOW);
+  digitalWrite(left_motor_2_gpio, LOW);
+  digitalWrite(right_motor_1_gpio, LOW);
+  digitalWrite(right_motor_2_gpio, LOW);
 
   // update speed and acceleration to 0
   acceleration = 0;
@@ -77,16 +88,22 @@ void Driver::stop() {
 }
 
 void Driver::set_direction_forward() {
-  left_motor_1->on();
-  left_motor_2->off();
-  right_motor_1->off();
-  right_motor_2->on();
+  digitalWrite(left_motor_1_gpio, LOW);
+  digitalWrite(left_motor_2_gpio, HIGH);
+  digitalWrite(right_motor_1_gpio, HIGH);
+  digitalWrite(right_motor_2_gpio, LOW);
+  direction = "forward";
 }
 
 void Driver::set_direction_backward() {
-  left_motor_1->off();
-  left_motor_2->on();
-  right_motor_1->on();
-  right_motor_2->off();
+  digitalWrite(left_motor_1_gpio, HIGH);
+  digitalWrite(left_motor_2_gpio, LOW);
+  digitalWrite(right_motor_1_gpio, LOW);
+  digitalWrite(right_motor_2_gpio, HIGH);
+  direction = "backward";
+}
+
+void Driver::log_status() {
+  cout << "direction: " << direction << ", left_speed: " << left_speed << ", right_speed: " << right_speed << endl;
 }
 
