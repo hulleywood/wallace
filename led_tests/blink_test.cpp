@@ -1,20 +1,23 @@
 #include <iostream>
-#include <unistd.h>
-#include "GPIO.h"
+#include <wiringPi.h>
 
 using namespace std;
 
 int main (void) {
 
-  GPIO* gpio18 = new GPIO("18");
-  gpio18->set_out();
+  if (wiringPiSetup () == -1)
+    return 1;
 
-  gpio18->on();
-  usleep(1000000);
-  gpio18->off();
+  const int pin = 29;
+
+  pinMode(pin, OUTPUT);
+  digitalWrite(pin, HIGH); 
+
+  delay(1000);
+
+  digitalWrite(pin, LOW); 
   
-  cout << "Exiting....." << endl;
-  delete gpio18;
-  gpio18 = NULL;
+  cout << "Exiting..." << endl;
+
   return 0;
 }

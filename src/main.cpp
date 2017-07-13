@@ -7,6 +7,10 @@ using namespace std;
 
 int main() {
 
+  if (wiringPiSetup () == -1)
+    return 1;
+
+  const int statusPin = 29;
   const int left_motor_1_gpio = 17;
   const int left_motor_2_gpio = 27;
   const int right_motor_1_gpio = 3;
@@ -14,15 +18,7 @@ int main() {
   const int left_pwm_gpio = 22;
   const int right_pwm_gpio = 2;
 
-  if (wiringPiSetup () == -1)
-    return 1;
-
   Driver driver(left_motor_1_gpio, left_motor_2_gpio, right_motor_1_gpio, right_motor_2_gpio, left_pwm_gpio, right_pwm_gpio);
-
-  const int statusPin = 29;
-  const int maxPWM = 100;
-
-  int currentSpeed;
   
   // turn on status indicator
   pinMode(statusPin, OUTPUT);
