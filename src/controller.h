@@ -1,5 +1,5 @@
-#ifndef DRIVER_H
-#define DRIVER_H
+#ifndef CONTROLLER_H
+#define CONTROLLER_H
 
 #include <string>
 #include <wiringPi.h>
@@ -7,10 +7,10 @@
 
 using namespace std;
 
-class Driver {
+class Controller {
   public:
-    Driver(int ENA_GPIO_, int ENB_GPIO_, int IN1_GPIO_, int IN2_GPIO_, int IN3_GPIO_, int IN4_GPIO_);
-    ~Driver();
+    Controller(int ENA_GPIO_, int ENB_GPIO_, int IN1_GPIO_, int IN2_GPIO_, int IN3_GPIO_, int IN4_GPIO_);
+    ~Controller();
 
     void accelerate();
     void decelerate();

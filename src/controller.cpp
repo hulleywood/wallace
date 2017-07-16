@@ -2,11 +2,11 @@
 #include <iostream>
 #include <wiringPi.h>
 #include <softPwm.h>
-#include "driver.h"
+#include "controller.h"
 
 using namespace std;
 
-Driver::Driver(int ENA_GPIO_, int ENB_GPIO_, int IN1_GPIO_, int IN2_GPIO_, int IN3_GPIO_, int IN4_GPIO_) {
+Controller::Controller(int ENA_GPIO_, int ENB_GPIO_, int IN1_GPIO_, int IN2_GPIO_, int IN3_GPIO_, int IN4_GPIO_) {
 
   // right wheel speed
   ENA_GPIO = ENA_GPIO_;
@@ -36,20 +36,20 @@ Driver::Driver(int ENA_GPIO_, int ENB_GPIO_, int IN1_GPIO_, int IN2_GPIO_, int I
   stop(); 
 }
 
-Driver::~Driver() {
+Controller::~Controller() {
   // ensure car stops on destruction
   stop();
 
   // TODO does wiringPi deal with unexporting GPIOs?
 }
 
-void Driver::update_motor_speeds() {
+void Controller::update_motor_speeds() {
   softPwmWrite(ENA_GPIO, right_speed);
   softPwmWrite(ENB_GPIO, left_speed);
   log_status();
 }
 
-void Driver::accelerate() {
+void Controller::accelerate() {
   left_speed += MAX_ACCELERATION;
   right_speed += MAX_ACCELERATION;
   
@@ -66,7 +66,7 @@ void Driver::accelerate() {
   update_motor_speeds();
 }
 
-void Driver::decelerate() {
+void Controller::decelerate() {
   left_speed -= MAX_ACCELERATION;
   right_speed -= MAX_ACCELERATION;
 
@@ -83,7 +83,7 @@ void Driver::decelerate() {
   update_motor_speeds();
 }
 
-void Driver::steer_left() {
+void Controller::steer_left() {
   // increase right speed to go left
   right_speed += MAX_ACCELERATION
 
@@ -97,7 +97,7 @@ void Driver::steer_left() {
   update_motor_speeds();
 }
 
-void Driver::steer_right() {
+void Controller::steer_right() {
   // increase left speed to go right
   left_speed += MAX_ACCELERATION
 
@@ -111,7 +111,7 @@ void Driver::steer_right() {
   update_motor_speeds();
 }
 
-void Driver::stop() {
+void Controller::stop() {
   // set all motors to off
   digitalWrite(IN1_GPIO, LOW);
   digitalWrite(IN2_GPIO, LOW);
@@ -125,7 +125,7 @@ void Driver::stop() {
   log_status();
 }
 
-void Driver::set_direction_forward() {
+void Controller::set_direction_forward() {
   // right wheel forward
   digitalWrite(IN1_GPIO, HIGH);
   digitalWrite(IN2_GPIO, LOW);
@@ -139,7 +139,7 @@ void Driver::set_direction_forward() {
   log_status();
 }
 
-void Driver::set_direction_backward() {
+void Controller::set_direction_backward() {
   // right wheel backward
   digitalWrite(IN1_GPIO, LOW);
   digitalWrite(IN2_GPIO, HIGH);
@@ -153,7 +153,7 @@ void Driver::set_direction_backward() {
   log_status();
 }
 
-void Driver::log_status() {
+void Controller::log_status() {
   cout << "direction: " << direction << ", left_speed: " << left_speed << ", right_speed: " << right_speed << endl;
 }
 

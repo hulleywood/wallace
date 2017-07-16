@@ -1,7 +1,7 @@
 #include <iostream>
 #include <wiringPi.h>
 #include <softPwm.h>
-#include "../driver.h"
+#include "../controller.h"
 
 using namespace std;
 
@@ -18,18 +18,18 @@ int main() {
   const int IN3_GPIO = 17;
   const int IN4_GPIO = 27;
 
-  Driver driver(ENA_GPIO, ENB_GPIO, IN1_GPIO, IN2_GPIO, IN3_GPIO, IN4_GPIO);
+  Controller controller(ENA_GPIO, ENB_GPIO, IN1_GPIO, IN2_GPIO, IN3_GPIO, IN4_GPIO);
   
   // turn on status indicator
   pinMode(STATUS_GPIO, OUTPUT);
   digitalWrite(STATUS_GPIO, HIGH); 
 
   // set direction to forward
-  driver.set_direction_forward();
+  controller.set_direction_forward();
 
   // accelerate for 10 * 100ms
   for (int steps = 0; steps < 10; steps++) {
-    driver.accelerate();
+    controller.accelerate();
     delay(100);
   }
 
@@ -37,16 +37,16 @@ int main() {
 
   // decelerate for 10 * 100ms
   for (int steps = 0; steps < 10; steps++) {
-    driver.decelerate();
+    controller.decelerate();
     delay(100);
   }
 
   // set direction backward
-  driver.set_direction_backward();
+  controller.set_direction_backward();
 
   // accelerate for 10 * 100ms
   for (int steps = 0; steps < 10; steps++) {
-    driver.accelerate();
+    controller.accelerate();
     delay(100);
   }
 
@@ -54,12 +54,12 @@ int main() {
 
   // decelerate for 10 * 100ms
   for (int steps = 0; steps < 10; steps++) {
-    driver.decelerate();
+    controller.decelerate();
     delay(100);
   }
 
   // turn all motors off
-  driver.stop();
+  controller.stop();
   
   // turn off status indicator
   digitalWrite(STATUS_GPIO, LOW);
