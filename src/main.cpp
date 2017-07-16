@@ -9,5 +9,7 @@ int main() {
 
   Vehicle vehicle();
 
+  // TODO listen for user input via websocket or keyboard
+
   return 0;
 }

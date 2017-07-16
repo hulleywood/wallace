@@ -8,6 +8,7 @@
 using namespace std;
 
 Vehicle::Vehicle() {
+
   if (wiringPiSetup () == -1)
     return 1;
 
@@ -19,6 +20,7 @@ Vehicle::Vehicle() {
   const int IN3_GPIO = 17;
   const int IN4_GPIO = 27;
 
+  // TODO make member
   Controller controller(ENA_GPIO, ENB_GPIO, IN1_GPIO, IN2_GPIO, IN3_GPIO, IN4_GPIO);
   
   // initialize status indicator
@@ -35,4 +37,5 @@ Vehicle::~Vehicle() {
 }
 
 void Vehicle::process_keyboard_input(char input) {
+  // TODO switch on input and execute control
 }
